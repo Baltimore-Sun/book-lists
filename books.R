@@ -3,11 +3,13 @@ library(tidyverse)
 library(janitor)
 library(tidyr)
 library(lubridate)
+library(magick)
 
 #Get data
 books <- read_csv("bookdata.csv") %>% clean_names()
 
 books$id <- 1:nrow(books)
+
 
 #Make bookshop links
 books$bookshop_link <- paste0("https://bookshop.org/a/113618/", books$isbn)
@@ -65,3 +67,39 @@ write.csv(recs[c(1:5)], "recs.csv", row.names = FALSE)
 #pick of week
 pow <- bookstbls %>% filter(subgroup == "Bruce Wagner's Pick of the Week")
 write.csv(pow[c(1:5)], "pow.csv", row.names = FALSE)
+
+#Create thumbnail image
+
+topimages <- books
+
+topimages$groupnarrow <- paste0(topimages$group, "_", topimages$subgroup)
+
+grouped_images <- topimages %>%
+  group_by(groupnarrow)
+
+topimages <- grouped_images %>%
+  slice_min(id, n = 1) %>%
+  ungroup()
+
+image_urls <- topimages$image_url
+
+
+tn1 <- image_read(image_urls[1])
+tn3 <- image_read(image_urls[2])
+tn3 <- image_read(image_urls[3])
+tn4 <- image_read(image_urls[4])
+tn5 <- image_read(image_urls[5])
+tn7 <- image_read(image_urls[7])
+tn7 <- image_read(image_urls[8])
+tn9 <- image_read(image_urls[9])
+
+compositeimg <- c(tn1, tn3, tn4, tn5, tn7, tn9, tn8, tn2)
+
+
+input <- rep(compositeimg, 1)
+
+# Create a panel (a montage)
+p <- image_montage(input, geometry = 'x150+20+10', tile = '4x2', bg = 'black')
+
+p <- image_convert(p, "jpg")
+image_write(p, "TBS-L-BOOKSTN.jpg")
