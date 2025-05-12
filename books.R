@@ -5,7 +5,7 @@ library(tidyr)
 library(lubridate)
 
 #Get data
-books <- read_csv("/Users/searley/Downloads/baltimore_sun_book_data-example - Sheet1.csv") %>% clean_names()
+books <- read_csv("bookdata.csv") %>% clean_names()
 
 #Make bookshop links
 books$bookshop_link <- paste0("https://bookshop.org/a/113618/", books$isbn)
