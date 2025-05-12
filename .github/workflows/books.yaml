@@ -23,6 +23,7 @@ jobs:
             any::janitor
             any::tidyr
             any::lubridate
+            any::magick
 
       - name: Execute Script
         run: |
