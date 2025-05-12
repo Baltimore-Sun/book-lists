@@ -102,4 +102,4 @@ input <- rep(compositeimg, 1)
 p <- image_montage(input, geometry = 'x150+20+10', tile = '4x2', bg = 'black')
 
 p <- image_convert(p, "jpg")
-image_write(p, paste0('TBS-L-BOOKSTN-', Sys.Date(), '.jpg'))
+image_write(p, "TBS-L-BOOKSTN.jpg")
