@@ -85,12 +85,12 @@ image_urls <- topimages$image_url
 
 
 tn1 <- image_read(image_urls[1])
-tn3 <- image_read(image_urls[2])
+tn2 <- image_read(image_urls[2])
 tn3 <- image_read(image_urls[3])
 tn4 <- image_read(image_urls[4])
 tn5 <- image_read(image_urls[5])
 tn7 <- image_read(image_urls[7])
-tn7 <- image_read(image_urls[8])
+tn8 <- image_read(image_urls[8])
 tn9 <- image_read(image_urls[9])
 
 compositeimg <- c(tn1, tn3, tn4, tn5, tn7, tn9, tn8, tn2)
