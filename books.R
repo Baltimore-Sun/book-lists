@@ -19,7 +19,7 @@ books$bookshop_link <- gsub("-", "", books$bookshop_link)
 
 #Structure data for tables
 bookstbls <- books[c(1:7,9:12)]
-bookstbls$image <- paste0("[![", bookstbls$title,"](", bookstbls$image_url,"'",bookstbls$title,"')](", bookstbls$bookshop_link,")")
+bookstbls$image <- paste0("[![", bookstbls$title,"](", bookstbls$image_url,")](", bookstbls$bookshop_link,")")
 bookstbls$title <- paste0("[", bookstbls$title, "](", bookstbls$bookshop_link, ") (",bookstbls$format, ")")
 bookstbls$publisher <- paste0(bookstbls$publisher, " (", bookstbls$pub_date, ")")
 bookstbls <- bookstbls[c(12,1,4,8,6,2,3,10)]
