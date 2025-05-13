@@ -99,7 +99,7 @@ compositeimg <- c(tn1, tn3, tn4, tn5, tn7, tn9, tn8, tn2)
 input <- rep(compositeimg, 1)
 
 # Create a panel (a montage)
-p <- image_montage(input, geometry = 'x150+20+10', tile = '4x2', bg = 'black')
+p <- image_montage(input, geometry = 'x200+20+20', tile = '4x2', bg = 'black')
 
 p <- image_convert(p, "jpg")
 image_write(p, "TBS-L-BOOKSTN.jpg")
