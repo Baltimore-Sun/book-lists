@@ -6,7 +6,7 @@ library(lubridate)
 library(magick)
 
 #Get data
-books <- read_csv("/Users/searley/Downloads/bookdata.csv") %>% clean_names()
+books <- read_csv("bookdata.csv") %>% clean_names()
 
 books$id <- 1:nrow(books)
 
