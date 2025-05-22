@@ -5,6 +5,23 @@ library(tidyr)
 library(lubridate)
 library(magick)
 
+
+#Calculate date to date the data (assumes running this script within 7 days of publication)
+today <- today()
+
+most_recent_past_sunday <- floor_date(today, unit = "week", week_start = 1)
+
+if (wday(today) == 1) { # If today is Sunday
+  most_recent_past_sunday <- today - days(7)
+} else {
+  most_recent_past_sunday <- today - days(wday(today) - 1)
+}
+
+
+sunday_before_most_recent <- most_recent_past_sunday - days(7)
+
+formatted_date <- format(sunday_before_most_recent, "%B %d")
+
 #Get data
 books <- read_csv("bookdata.csv") %>% clean_names()
 
@@ -20,7 +37,7 @@ books$bookshop_link <- gsub("-", "", books$bookshop_link)
 #Format data for html
 bookstbls <- books[c(1:7,9:12)]
 bookstbls$title <- gsub("'", "&#39;", bookstbls$title)
-bookstbls$image <- paste0("<a href='", bookstbls$bookshop_link, "' target='_blank'><img style='float: left;width: 120px;padding: 0 20px 20px 0;margin-top: 5px' alt='", bookstbls$title, "book cover image' src='", bookstbls$image_url, "'></a>" )
+bookstbls$image <- paste0("<a href='", bookstbls$bookshop_link, "' target='_blank'><img style='float: left;width: 120px;padding: 0 20px 20px 0;margin-top: 5px' alt='", bookstbls$title, " book cover image' src='", bookstbls$image_url, "'></a>" )
 bookstbls$publisher <- paste0("<em>", bookstbls$publisher, " (", bookstbls$pub_date, ")</em>" )
 bookstbls$title <- paste0("<a href='", bookstbls$bookshop_link, "' target='_blank' style='color:#1c2551;'>", bookstbls$title, "</a>")
 bookstbls$blurb <- gsub("[\r\n]", "", bookstbls$blurb)
@@ -67,7 +84,9 @@ recs <- recs[c(1:5)]
 pow <- bookstbls %>% filter(subgroup == "Bruce Wagner's Pick of the Week")
 pow <- pow[c(1:5)]
 
-
+#book of the week
+bow <- bookstbls %>% filter(subgroup == "Book of the Week")
+bow <- bow[c(1:5)]
 
 #Compile HTML
 
@@ -75,7 +94,7 @@ pow <- pow[c(1:5)]
 
 
 build_html <- function(topic) {
-paste0(topic$image, "<strong>", topic$title, "</strong><br>", topic$author, "<br>", topic$publisher, "<p style='overflow: hidden;'>", topic$blurb,"</p><div style='clear: both'></div><hr style='margin-top:-16px;'>")
+paste0(topic$image, "<strong>", topic$title, "</strong><br>", topic$author, "<br>", topic$publisher, "<p style='overflow: hidden;padding-bottom:15px;'>", topic$blurb,"</p><div style='clear: both'></div><hr style='margin-top:-16px;'>")
 }
 
 
@@ -92,26 +111,32 @@ childhtml <- build_html(children)
 yahtml <- build_html(ya)
 powhtml <- build_pow(pow)
 recshtml <- build_pow(recs)
-
+bowhtml <- build_pow(bow)
 
 powhtml <- gsub("<p>", "<p style='margin-bottom:16px;'>", powhtml)
 powhtml <- gsub("<ul>", "<ul style='margin-bottom:16px;'>", powhtml)
 
+bowhtml <- gsub("<p>", "<p style='margin-bottom:16px;'>", bowhtml)
+bowhtml <- gsub("<ul>", "<ul style='margin-bottom:16px;'>", bowhtml)
+bowhtml <- gsub("<blockquote>", "<blockquote style='margin-bottom:16px;font-size:1.125em;'>", bowhtml)
+
 recshtml <- gsub("<p>", "<p style='margin-bottom:16px;'>", recshtml)
 recshtml <- gsub("<ul>", "<ul style='margin-bottom:16px;'>", recshtml)
 
-bookshtml <- paste0("<p>The Baltimore Sun’s weekly bestseller lists of fiction, non-fiction, biography, lifestyle, political, children's and young adult books are compiled by staff members of <a href='https://www.skyhorsepublishing.com/' target='_blank' rel='noopener'>Skyhorse Publishing</a> based on publishing houses', booksellers', online retailers' and other sources' sales data covering the prior Monday through Sunday. The reviews and recommendations are compiled by Skyhorse Publishing staff. The Sun welcomes suggestions on local authors to feature via email at <a href='mailto:books@baltsun.com'>books@baltsun.com</a>.</p>
+bookshtml <- paste0("<p>The Baltimore Sun’s weekly bestseller lists of fiction, non-fiction, biography, lifestyle, political, children's and young adult books are compiled by staff members of <a href='https://www.skyhorsepublishing.com/' target='_blank' rel='noopener'>Skyhorse Publishing</a> based on publishing houses', booksellers', online retailers' and other sources' sales data covering the week ending ", formatted_date, ". The reviews and recommendations are compiled by Skyhorse Publishing staff. The Sun welcomes suggestions on local authors to feature via email at <a href='mailto:books@baltsun.com'>books@baltsun.com</a>.</p>
 <p>As a participant in Bookshop.org's affiliate program, The Baltimore Sun earns a small commission from qualifying purchases through affiliate links on this page.</p><h3 style='color: #fff; padding: 5px 5px 5px 7px; background-color: #1c2551; font-size: .925em; font-family:","Droid Sans", "sans-serif; width: 120px; text-transform: uppercase;'>Bestsellers</h3>
-                    <h4 style='border-top:3px solid #000;padding-top:10px;'>Fiction</h4>", toString(fictionhtml),
-                    "<h4 style='border-top:3px solid #000;padding-top:10px;'>Non-fiction: Biography & autobiography</h4>", toString(biohtmml),
-                    "<h4 style='border-top:3px solid #000;padding-top:10px;'>Non-fiction: Self-help & advice</h4>", toString(helphtml),
-                    "<h4 style='border-top:3px solid #000;padding-top:10px;'>Non-fiction: Lifestyle</h4>", toString(lifehtml),
-                    "<h4 style='border-top:3px solid #000;padding-top:10px;'>Left, right, and center</h4>", toString(lrchtml),
-                    "<h4 style='border-top:3px solid #000;padding-top:10px;'>Children’s</h4>", toString(childhtml),
-                    "<h4 style='border-top:3px solid #000;padding-top:10px;'>Young adult</h4>", toString(yahtml),
+                    <h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Fiction</h4>", toString(fictionhtml),
+                    "<h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Non-fiction: Biography & autobiography</h4>", toString(biohtmml),
+                    "<h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Non-fiction: Self-help & advice</h4>", toString(helphtml),
+                    "<h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Non-fiction: Lifestyle</h4>", toString(lifehtml),
+                    "<h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Left, right, and center</h4>", toString(lrchtml),
+                    "<h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Children’s</h4>", toString(childhtml),
+                    "<h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Young adult</h4>", toString(yahtml),
                     "<h3 style='color: #fff; padding: 5px 5px 5px 7px; width:198px!important;background-color: #1c2551; font-size: .925em; font-family:","Droid Sans", "sans-serif; text-transform: uppercase;'>Recommended Books</h3>",
                     toString(recshtml),
-                    "<h4 style='border-top:3px solid #000;padding-top:10px;'>Bruce Wagner's Pick of the Week</h4>", toString(powhtml), "<br><br>"
+                    "<h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Bruce Wagner's Pick of the Week</h4>", toString(powhtml), 
+                    "<h4 style='border-top:3px solid #1c2551;padding-top:10px;'>Book of the Week</h4>", toString(bowhtml), 
+                    "<br><br>"
                      )
 
 
@@ -160,7 +185,7 @@ compositeimg <- c(tn1, tn3, tn4, tn5, tn7, tn9, tn8, tn2)
 input <- rep(compositeimg, 1)
 
 # Create a panel (a montage)
-p <- image_montage(input, geometry = 'x200+20+20', tile = '4x2', bg = 'black')
+p <- image_montage(input, geometry = 'x200+20+20', tile = '4x2', bg = '#141414')
 
 p <- image_convert(p, "jpg")
 image_write(p, "TBS-L-BOOKSTN.jpg")
