@@ -176,7 +176,7 @@ tn3 <- image_read(image_urls[3])
 tn4 <- image_read(image_urls[4])
 tn5 <- image_read(image_urls[5])
 tn7 <- image_read(image_urls[6])
-tn8 <- image_read(image_urls[8])
+tn8 <- image_read(image_urls[9])
 tn9 <- image_read(image_urls[7])
 
 compositeimg <- c(tn1, tn3, tn4, tn5, tn7, tn9, tn8, tn2)
